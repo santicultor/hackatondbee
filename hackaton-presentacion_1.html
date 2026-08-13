@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hackatón Musical UniSabana — Presentación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700;900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#00205B;
+  --blue:#00387B;
+  --gold:#F5C518;
+  --night:#00102E;
+  --white:#FFFFFF;
+  --paper:#F7F8FB;
+
+  --bg:var(--white);
+  --fg:var(--navy);
+  --muted:rgba(0,32,91,.62);
+  --hair:rgba(0,32,91,.16);
+  --panel:rgba(0,32,91,.04);
+  --logo-filter:none;
+
+  --display:'Playfair Display',Georgia,serif;
+  --body:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+[data-theme="night"]{
+  --bg:var(--night);
+  --fg:#FFFFFF;
+  --muted:rgba(255,255,255,.62);
+  --hair:rgba(255,255,255,.18);
+  --panel:rgba(255,255,255,.05);
+  --logo-filter:brightness(0) invert(1);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--body);
+  background:var(--bg);
+  color:var(--fg);
+  transition:background .9s cubic-bezier(.4,0,.2,1), color .9s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- estructura de slides ---------- */
+#deck{
+  height:100vh;
+  overflow-y:scroll;
+  scroll-snap-type:y mandatory;
+  scroll-behavior:smooth;
+}
+#deck::-webkit-scrollbar{display:none}
+#deck{scrollbar-width:none}
+
+.slide{
+  min-height:100vh;
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:7vh 7vw 9vh;
+  position:relative;
+}
+
+/* ---------- cromo fijo ---------- */
+.logo-fixed{
+  position:fixed; top:3vh; left:7vw; z-index:60;
+  height:26px; width:auto;
+  filter:var(--logo-filter);
+  transition:filter .9s cubic-bezier(.4,0,.2,1), opacity .5s;
+  opacity:.9;
+}
+.logo-fallback{
+  position:fixed; top:3vh; left:7vw; z-index:60;
+  font:700 13px/1 var(--body); letter-spacing:.14em;
+  color:var(--fg); text-transform:uppercase; display:none;
+  transition:color .9s;
+}
+.meta-fixed{
+  position:fixed; top:3vh; right:7vw; z-index:60;
+  font:500 11px/1 var(--body); letter-spacing:.16em;
+  color:var(--muted); text-transform:uppercase;
+  transition:color .9s, opacity .5s;
+  text-align:right;
+}
+
+/* barra de progreso: onda */
+.wave-progress{
+  position:fixed; bottom:0; left:0; width:100%; height:44px;
+  z-index:55; pointer-events:none;
+  display:flex; align-items:flex-end; gap:3px;
+  padding:0 7vw 14px;
+  transition:opacity .5s;
+}
+.wave-progress span{
+  flex:1; background:var(--hair); border-radius:2px;
+  transition:background .5s, height .6s cubic-bezier(.4,0,.2,1);
+}
+.wave-progress span.on{background:var(--gold)}
+
+/* navegación por puntos */
+.dots{
+  position:fixed; right:2.4vw; top:50%; transform:translateY(-50%);
+  z-index:60; display:flex; flex-direction:column; gap:14px;
+  transition:opacity .5s;
+}
+.dots button{
+  width:8px;height:8px;border-radius:50%;border:none;padding:0;
+  background:var(--hair); cursor:pointer; transition:all .35s;
+}
+.dots button:hover{background:var(--muted);transform:scale(1.3)}
+.dots button.on{background:var(--gold);height:22px;border-radius:4px}
+.dots button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+.hint{
+  position:fixed; bottom:58px; right:7vw; z-index:60;
+  font:400 10px/1 var(--body); letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); transition:opacity .6s;
+}
+.hint.hide{opacity:0;pointer-events:none}
+
+/* ---------- tipografía ---------- */
+.eyebrow{
+  font:500 11px/1 var(--body); letter-spacing:.22em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:26px;
+}
+.eyebrow b{color:var(--gold);font-weight:500}
+h1{font-family:var(--display);font-weight:900;line-height:.94;letter-spacing:-.02em;
+   font-size:clamp(42px,7.4vw,104px)}
+h2{font-family:var(--display);font-weight:700;line-height:1.02;letter-spacing:-.015em;
+   font-size:clamp(30px,4.4vw,60px);margin-bottom:34px}
+h3{font-family:var(--body);font-weight:700;font-size:16px;letter-spacing:-.01em;margin-bottom:8px}
+p{font-size:clamp(14px,1.15vw,17px);line-height:1.62;color:var(--muted);max-width:62ch}
+.lead{font-size:clamp(16px,1.4vw,20px);color:var(--fg);opacity:.86}
+
+/* ---------- reveals ---------- */
+.r{opacity:0;transform:translateY(26px);transition:opacity .85s cubic-bezier(.2,.7,.3,1),transform .85s cubic-bezier(.2,.7,.3,1)}
+.slide.active .r{opacity:1;transform:none}
+.slide.active .r:nth-child(1){transition-delay:.05s}
+.slide.active .r:nth-child(2){transition-delay:.14s}
+.slide.active .r:nth-child(3){transition-delay:.23s}
+.slide.active .r:nth-child(4){transition-delay:.32s}
+.slide.active .r:nth-child(5){transition-delay:.41s}
+.slide.active .r:nth-child(6){transition-delay:.5s}
+
+/* ---------- portada ---------- */
+#s1 .title-wrap{position:relative}
+#s1 h1 em{font-style:italic;font-weight:500;color:var(--gold)}
+.cover-rule{height:1px;background:var(--hair);margin:44px 0 30px;width:100%}
+.cover-foot{display:flex;flex-wrap:wrap;gap:52px}
+.cover-foot div{min-width:120px}
+.cover-foot .k{font:500 10px/1 var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.cover-foot .v{font:500 15px/1.4 var(--body);color:var(--fg)}
+
+/* onda animada de portada */
+.hero-wave{display:flex;align-items:center;gap:4px;height:56px;margin:38px 0 0}
+.hero-wave i{
+  display:block;width:4px;border-radius:3px;background:var(--navy);opacity:.22;
+  animation:pulse 1.9s ease-in-out infinite;
+}
+[data-theme="night"] .hero-wave i{background:#fff}
+@keyframes pulse{0%,100%{transform:scaleY(.28)}50%{transform:scaleY(1)}}
+
+/* ---------- grid genérico ---------- */
+.grid{display:grid;gap:1px;background:var(--hair);border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+.grid>div{background:var(--bg);padding:26px 24px 28px;transition:background .9s}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+
+/* números grandes */
+.stat .n{font-family:var(--display);font-weight:900;font-size:clamp(38px,5vw,68px);line-height:1;letter-spacing:-.03em;margin-bottom:12px}
+.stat .n span{color:var(--gold)}
+.stat .l{font-size:13px;line-height:1.5;color:var(--muted);max-width:26ch}
+
+/* ---------- líneas temáticas ---------- */
+.lines{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:8px}
+.line-card{border:1px solid var(--hair);padding:30px 28px;position:relative;transition:border-color .4s,background .9s}
+.line-card:hover{border-color:var(--gold)}
+.line-card .tag{font:500 10px/1 var(--body);letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:block}
+.line-card h3{font-family:var(--display);font-weight:700;font-size:24px;margin-bottom:12px}
+
+/* ---------- antecedentes (revelado por pasos) ---------- */
+.step{display:none}
+.step.on{display:block;animation:fadeUp .6s cubic-bezier(.2,.7,.3,1)}
+.ante-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin:8px 0 26px}
+.ante-card{border:1px solid var(--hair);padding:26px 24px;transition:background .9s}
+.ante-card .ay{font:500 10px/1 var(--body);letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:block}
+.ante-card h3{font-family:var(--display);font-weight:700;font-size:21px;margin-bottom:14px}
+.ante-card .amt2{font-family:var(--display);font-weight:900;font-size:34px;line-height:1;letter-spacing:-.02em;margin-bottom:10px}
+.ante-card .adesc{font-size:12.5px;line-height:1.55;color:var(--muted)}
+.nextbtn{
+  background:none;border:1px solid var(--hair);border-radius:2px;
+  padding:14px 26px;cursor:pointer;font:500 12px/1 var(--body);
+  letter-spacing:.14em;text-transform:uppercase;color:var(--fg);
+  transition:border-color .3s,background .3s;margin-top:8px;
+}
+.nextbtn:hover{border-color:var(--gold);background:var(--panel)}
+.nextbtn:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.nextbtn b{color:var(--gold);font-weight:500;margin-left:8px}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--hair);margin-bottom:28px;flex-wrap:wrap}
+.tabs button{
+  background:none;border:none;padding:0 26px 15px 0;margin-right:8px;cursor:pointer;
+  font:500 13px/1 var(--body);letter-spacing:.02em;color:var(--muted);
+  border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .3s,border-color .3s;
+}
+.tabs button:hover{color:var(--fg)}
+.tabs button.on{color:var(--fg);border-bottom-color:var(--gold);font-weight:700}
+.tabs button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.tabpane{display:none}
+.tabpane.on{display:block;animation:fadeUp .5s cubic-bezier(.2,.7,.3,1)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.align-grid{display:grid;gap:1px;background:var(--hair);border:1px solid var(--hair)}
+.ag2{grid-template-columns:repeat(2,1fr)}
+.ag4{grid-template-columns:repeat(4,1fr)}
+.ag-cell{background:var(--bg);padding:20px 20px 22px;transition:background .9s;position:relative}
+.ag-cell.star{background:var(--panel)}
+.ag-cell .agt{font:700 13.5px/1.3 var(--body);margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.ag-cell .agt em{font-style:normal;color:var(--gold);font-size:11px}
+.ag-cell .agd{font-size:12px;line-height:1.55;color:var(--muted)}
+.ag-note{font-size:13px;color:var(--muted);margin-top:20px;padding-left:16px;border-left:2px solid var(--gold)}
+.ag-note strong{color:var(--fg);font-weight:500}
+.tl-wrap{margin-top:10px}
+.tl-bar{
+  position:relative;height:98px;border-radius:3px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.24);
+}
+.tl-sky{
+  position:absolute;top:0;left:0;right:0;height:15px;
+  background:linear-gradient(90deg,
+    #EEF1F8 0%, #EEF1F8 14%,
+    #93A6C9 22%,
+    #37538C 32%,
+    #16295C 44%, #16295C 60%,
+    #3C63A0 70%,
+    #A8B8D6 80%,
+    #EEF1F8 88%, #EEF1F8 100%);
+}
+.tl-track{position:absolute;top:15px;left:0;right:0;bottom:0}
+.tl-seg{
+  position:absolute;top:0;bottom:0;left:var(--l);width:var(--w);
+  background:var(--c);display:flex;align-items:center;justify-content:center;
+  box-shadow:inset -1px 0 0 rgba(0,16,46,.22);
+}
+.tl-seg span{
+  font:500 9.5px/1.25 var(--body);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--st,#00205B);text-align:center;padding:0 5px;
+}
+.tl-bar .fill{
+  position:absolute;inset:0;background:var(--night);
+  transform-origin:right;transform:scaleX(1);
+  transition:transform 2.1s cubic-bezier(.4,0,.2,1) .35s;
+}
+.slide.active .tl-bar .fill{transform:scaleX(0)}
+.tl-marks{position:relative;height:1px;margin-top:0}
+.tl-mark{position:absolute;transform:translateX(-50%);text-align:center;top:0}
+.tl-mark.first{transform:none;text-align:left}
+.tl-mark.first i{margin:0 0 9px}
+.tl-mark.last{transform:translateX(-100%);text-align:right}
+.tl-mark.last i{margin:0 0 9px auto}
+.tl-mark i{display:block;width:1px;height:12px;background:var(--hair);margin:0 auto 9px}
+.tl-mark .h{font:700 12px/1 var(--body);letter-spacing:.02em;color:var(--fg);margin-bottom:5px;white-space:nowrap}
+.tl-mark .t{font:400 10px/1.35 var(--body);color:var(--muted);white-space:nowrap}
+.tl-legend{display:flex;gap:26px;margin-top:76px;flex-wrap:wrap}
+.tl-legend div{font:400 11px/1.4 var(--body);color:var(--muted);display:flex;align-items:center;gap:9px}
+.tl-legend b{width:9px;height:9px;border-radius:2px;display:block}
+
+/* ---------- mentores / turnos ---------- */
+.shifts{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--hair);border:1px solid var(--hair);margin-top:6px}
+.shift{background:var(--bg);padding:22px 18px 24px;transition:background .9s;position:relative}
+.shift .hr{font:700 15px/1 var(--body);margin-bottom:10px}
+.shift .dur{font:500 10px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px}
+.shift .dur.dia{color:var(--muted)}
+.shift .dur.noche{color:var(--gold)}
+.shift .who{font-size:12.5px;line-height:1.55;color:var(--muted)}
+
+/* ---------- evaluación ---------- */
+.crit{margin-top:4px}
+.crit-row{display:grid;grid-template-columns:1fr 58px;gap:20px;align-items:center;padding:15px 0;border-bottom:1px solid var(--hair)}
+.crit-row .cname{font-size:14.5px;font-weight:500}
+.crit-row .cbar{grid-column:1/-1;height:2px;background:var(--hair);position:relative;margin-top:-6px}
+.crit-row .cbar i{position:absolute;inset:0 auto 0 0;background:var(--gold);width:0;transition:width 1.15s cubic-bezier(.4,0,.2,1)}
+.slide.active .crit-row .cbar i{width:var(--w)}
+.crit-row .cpct{font-family:var(--display);font-weight:700;font-size:22px;text-align:right}
+
+/* ---------- premios ---------- */
+.prize{border:1px solid var(--hair);padding:26px 24px;transition:background .9s,border-color .4s}
+.prize.gold{border-color:var(--gold)}
+.prize .p-tag{font:500 10px/1 var(--body);letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:block}
+.prize ul{list-style:none;margin-top:12px}
+.prize li{font-size:13.5px;line-height:1.75;color:var(--muted);padding-left:16px;position:relative}
+.prize li::before{content:'';position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.55}
+
+/* ---------- presupuesto ---------- */
+.budget-total{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+.budget-total .amt{font-family:var(--display);font-weight:900;font-size:clamp(40px,6.2vw,84px);line-height:1;letter-spacing:-.03em}
+.budget-total .cur{font:500 13px/1 var(--body);letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+.budget-note{font-size:13px;color:var(--muted);margin-bottom:34px}
+.bstack{display:flex;height:52px;border-radius:3px;overflow:hidden;margin-bottom:22px}
+.bstack div{height:100%;width:0;transition:width 1.3s cubic-bezier(.4,0,.2,1),opacity .3s;cursor:pointer}
+.slide.active .bstack div{width:var(--w)}
+.bstack.sel div{opacity:.3}
+.bstack.sel div.on{opacity:1}
+.blegend{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hair);border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+.blegend>button{
+  background:var(--bg);padding:20px 18px;transition:background .9s;
+  border:none;text-align:left;cursor:pointer;font-family:var(--body);
+  border-top:2px solid transparent;
+}
+.blegend>button:hover{background:var(--panel)}
+.blegend>button.on{border-top-color:var(--gold);background:var(--panel)}
+.blegend>button:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+.blegend .sw{width:22px;height:3px;border-radius:2px;margin-bottom:14px}
+.blegend .bn{font:700 17px/1 var(--body);margin-bottom:6px;color:var(--fg)}
+.blegend .bl{font-size:11.5px;line-height:1.5;color:var(--muted)}
+.bdetail{
+  margin-top:20px;border-left:2px solid var(--gold);padding:4px 0 4px 20px;
+  min-height:96px;
+}
+.bdetail .dt{font:500 10px/1 var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.bdetail table{width:100%;border-collapse:collapse;max-width:760px}
+.bdetail td{padding:7px 0;font-size:13px;border-bottom:1px solid var(--hair);color:var(--muted)}
+.bdetail td:last-child{text-align:right;font-weight:500;color:var(--fg);white-space:nowrap;padding-left:20px}
+.bdetail tr:last-child td{border-bottom:none;font-weight:700;color:var(--fg);padding-top:11px}
+.bdetail .empty{font-size:13px;color:var(--muted)}
+
+/* ---------- cierre / decisiones ---------- */
+.asks{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--hair);border:1px solid var(--hair);margin:6px 0 34px}
+.ask{background:var(--bg);padding:28px 24px 30px;transition:background .9s}
+.ask .num{font-family:var(--display);font-weight:900;font-size:34px;color:var(--gold);line-height:1;margin-bottom:16px}
+.ask h3{font-size:15px;margin-bottom:10px}
+.ask p{font-size:13px;line-height:1.6}
+.contact{display:flex;gap:56px;flex-wrap:wrap;padding-top:28px;border-top:1px solid var(--hair)}
+.contact .k{font:500 10px/1 var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.contact .v{font-size:14.5px;line-height:1.55}
+
+/* ---------- responsive ---------- */
+@media(max-width:900px){
+  .slide{padding:11vh 7vw 12vh;justify-content:flex-start}
+  .g3,.g4,.blegend,.asks{grid-template-columns:1fr 1fr}
+  .lines{grid-template-columns:1fr}
+  .shifts{grid-template-columns:1fr}
+  .dots{display:none}
+  h2{margin-bottom:24px}
+  .tl-legend{margin-top:110px}
+}
+@media(max-width:560px){
+  .g3,.g4,.blegend,.asks,.g2{grid-template-columns:1fr}
+  .cover-foot{gap:26px}
+  .contact{gap:26px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+  .r{opacity:1;transform:none}
+  .slide.active .tl-bar .fill{transform:scaleX(0)}
+}
+</style>
+</head>
+<body>
+
+<img class="logo-fixed" id="logo" alt="Universidad de La Sabana"
+     src="https://usabana.widen.net/content/nj8poma5mw/web/LOGO_POSITIVO-HORIZONTAL-COLOR.webp?v=5663b75e-714e-470a-a301-f45e6981fe45">
+<div class="logo-fallback" id="logoFallback">Universidad de La Sabana</div>
+<div class="meta-fixed">Desarrollo Cultural · DBEE</div>
+
+<nav class="dots" id="dots" aria-label="Navegación de la presentación"></nav>
+<div class="wave-progress" id="wave" aria-hidden="true"></div>
+<div class="hint" id="hint">↓ / → para avanzar</div>
+
+<main id="deck">
+
+  <!-- 0 · TODOS LISTOS -->
+  <section class="slide" data-t="day" id="s0" style="align-items:center;text-align:center">
+    <div class="r" style="display:flex;flex-direction:column;align-items:center">
+      <img id="coverLogo" src="https://usabana.widen.net/content/nj8poma5mw/web/LOGO_POSITIVO-HORIZONTAL-COLOR.webp?v=5663b75e-714e-470a-a301-f45e6981fe45"
+           alt="Universidad de La Sabana" style="height:34px;margin-bottom:46px">
+      <div id="coverLogoFallback" style="display:none;font:700 15px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--navy);margin-bottom:46px">Universidad de La Sabana</div>
+      <h1 style="font-size:clamp(40px,6.4vw,78px)">¿Todos listos?</h1>
+      <p class="lead" style="margin-top:20px;max-width:44ch">Jefatura de Desarrollo Cultural · Dirección de Bienestar y Experiencia del Estudiante</p>
+      <button class="nextbtn" data-go="next" style="margin-top:48px">Comenzar <b>→</b></button>
+    </div>
+  </section>
+
+  <!-- 1 · ANTECEDENTES -->
+  <section class="slide" data-t="day" id="s1">
+    <div class="eyebrow r">Punto de partida</div>
+
+    <div class="step on" data-s="0">
+      <h2 style="max-width:22ch">No partimos de cero.</h2>
+      <p class="lead" style="margin-bottom:36px;max-width:58ch">Durante los últimos años, Desarrollo Cultural ha llevado a escena festivales que reúnen a la comunidad alrededor del talento estudiantil.</p>
+      <button class="nextbtn" data-go="1">Ver antecedentes <b>→</b></button>
+    </div>
+
+    <div class="step" data-s="1">
+      <h2 style="max-width:22ch;font-size:clamp(26px,3.4vw,44px)">Ya hemos hecho esto antes.</h2>
+      <div class="ante-grid">
+        <div class="ante-card">
+          <span class="ay">2025</span>
+          <h3>Festival de Talentos</h3>
+          <div class="amt2">$7.000.000</div>
+          <div class="adesc">Presupuesto aproximado. Formato de muestra: los estudiantes presentan lo que ya tienen preparado.</div>
+        </div>
+        <div class="ante-card">
+          <span class="ay">2024</span>
+          <h3>Sabana Music Fest</h3>
+          <div class="amt2">$11.000.000</div>
+          <div class="adesc">Presupuesto aproximado. Antecedente de mayor escala en la agenda cultural del área.</div>
+        </div>
+      </div>
+      <button class="nextbtn" data-go="2">¿Y si además de mostrar talento, lo formáramos? <b>→</b></button>
+    </div>
+
+    <div class="step" data-s="2">
+      <h2 style="max-width:26ch">De mostrar talento<br>a producirlo.</h2>
+      <p class="lead" style="margin-bottom:14px;max-width:62ch">Un festival exhibe lo que los estudiantes ya saben hacer. Esta propuesta los pone a crear algo que no existía, con mentoría, evaluación externa y un producto real al final.</p>
+      <p style="margin-bottom:34px;max-width:62ch">Es el mismo público, el mismo tipo de inversión — y una experiencia que el nuevo modelo académico sí puede certificar.</p>
+      <button class="nextbtn" data-go="next">Ver la propuesta <b>→</b></button>
+    </div>
+  </section>
+
+  <!-- 1 · PORTADA -->
+  <section class="slide" data-t="day" id="s2">
+    <div class="title-wrap">
+      <div class="eyebrow r">Jefatura de Desarrollo Cultural · Propuesta 2026</div>
+      <h1 class="r">Hackatón<br>Musical<br><em>UniSabana</em></h1>
+      <div class="hero-wave r" id="heroWave"></div>
+      <div class="cover-rule r"></div>
+      <div class="cover-foot r">
+        <div><div class="k">Fecha</div><div class="v">6 y 7 de noviembre<br>de 2026</div></div>
+        <div><div class="k">Duración</div><div class="v">24 horas exactas<br>2:00 p.m. → 2:00 p.m.</div></div>
+        <div><div class="k">Participantes</div><div class="v">50 a 70 estudiantes<br>10 a 14 equipos</div></div>
+        <div><div class="k">Sedes</div><div class="v">Estudioteca<br>Auditorio del K</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 · EL RETO -->
+  <section class="slide" data-t="day" id="s3">
+    <div class="eyebrow r">02 — El reto</div>
+    <h2 class="r" style="max-width:17ch">Componer una canción original en 24&nbsp;horas y estrenarla en vivo.</h2>
+    <p class="lead r" style="margin-bottom:40px;max-width:64ch">Abierta a toda la comunidad estudiantil de pregrado y posgrado: no hace falta pertenecer a un grupo representativo para participar. Los once grupos musicales entran con énfasis especial — es la primera vez que se encuentran a crear juntos.</p>
+    <div class="grid g4 r">
+      <div class="stat"><div class="n" style="font-size:clamp(24px,2.6vw,34px);line-height:1.1">Todo el<br>campus</div><div class="l" style="margin-top:4px">Convocatoria abierta a cualquier estudiante con un instrumento, una voz o ganas de crear</div></div>
+      <div class="stat"><div class="n" data-count="11">0</div><div class="l">Grupos representativos musicales convocados con énfasis a un mismo proceso creativo</div></div>
+      <div class="stat"><div class="n" data-count="24">0</div><div class="l">Horas continuas de creación, montaje y estreno, con ventana de descanso en campus</div></div>
+      <div class="stat"><div class="n"><span>1</span></div><div class="l">Canción original por equipo: letra y música creadas íntegramente durante la jornada</div></div>
+    </div>
+  </section>
+
+  <!-- 2 · POR QUÉ IMPORTA -->
+  <section class="slide" data-t="day" id="s4">
+    <div class="eyebrow r">03 — Por qué importa <b>· haz clic en cada marco</b></div>
+    <h2 class="r" style="max-width:24ch">La hackatón ya está escrita en el modelo.</h2>
+    <p class="r" style="margin-bottom:26px;max-width:66ch">UniSabana Xperience nombra explícitamente las <strong style="color:var(--fg);font-weight:500">hackathons</strong> entre sus metodologías de aprendizaje experiencial. Este proyecto es el primero en llevarlas al terreno artístico, justo donde el modelo señala que Bienestar debe ser protagonista.</p>
+
+    <div class="tabs r" id="alignTabs" role="tablist">
+      <button class="on" data-p="0" role="tab">UniSabana Xperience</button>
+      <button data-p="1" role="tab">HIX · 8 elementos de calidad</button>
+      <button data-p="2" role="tab">Desarrollo Cultural</button>
+    </div>
+
+    <div class="r">
+      <!-- Xperience -->
+      <div class="tabpane on" data-p="0">
+        <div class="align-grid ag4">
+          <div class="ag-cell star">
+            <div class="agt">Actitud humanizadora <em>★ Bienestar</em></div>
+            <div class="agd">Componer en equipo exige escucha, negociación creativa y renuncia al protagonismo individual. La obra es una expresión estética producida por la comunidad.</div>
+          </div>
+          <div class="ag-cell star">
+            <div class="agt">Conexión con el entorno <em>★ Bienestar</em></div>
+            <div class="agd">Aprendizaje basado en retos: una restricción real de 24 horas y la vida universitaria como materia prima de la obra.</div>
+          </div>
+          <div class="ag-cell">
+            <div class="agt">CoInteligencia</div>
+            <div class="agd">La política de uso de IA no prohíbe: delimita dónde termina la herramienta y empieza la autoría humana, y pide declararlo.</div>
+          </div>
+          <div class="ag-cell">
+            <div class="agt">Conexión global</div>
+            <div class="agd">Es el rasgo con menor presencia en esta primera edición. El jurado externo y la circulación posterior de la obra son la vía para fortalecerlo.</div>
+          </div>
+        </div>
+        <div class="ag-note">El modelo señala que <strong>Bienestar es protagonista especialmente en actitud humanizadora y conexión con el entorno</strong>, y que todos los estudiantes tendrán experiencias de apreciación artística y estética.</div>
+      </div>
+
+      <!-- HIX -->
+      <div class="tabpane" data-p="1">
+        <div class="align-grid ag4">
+          <div class="ag-cell"><div class="agt">Altas expectativas</div><div class="agd">Entregar una canción original terminada y estrenada en público, con estándar de presentación.</div></div>
+          <div class="ag-cell"><div class="agt">Tiempo y esfuerzo</div><div class="agd">Jornada intensiva continua de 24 horas, con un entregable por bloque creativo.</div></div>
+          <div class="ag-cell"><div class="agt">Interacción significativa</div><div class="agd">Equipos mixtos entre grupos y estudiantes nuevos, con mentoría directa de los maestros.</div></div>
+          <div class="ag-cell"><div class="agt">Diversidad de contextos</div><div class="agd">Convocatoria abierta a todas las facultades, programas y niveles de formación musical.</div></div>
+          <div class="ag-cell"><div class="agt">Retroalimentación permanente</div><div class="agd">Dos revisiones formales con mentores más acompañamiento continuo durante los bloques.</div></div>
+          <div class="ag-cell"><div class="agt">Reflexión guiada</div><div class="agd">Cierre reflexivo con los equipos y encuesta de experiencia posterior al evento.</div></div>
+          <div class="ag-cell"><div class="agt">Aplicación real</div><div class="agd">Producto artístico real: obra grabada, con licencia de uso y posibilidad de circulación.</div></div>
+          <div class="ag-cell"><div class="agt">Demostración pública</div><div class="agd">Showcase abierto a la comunidad universitaria, evaluado por jurado externo.</div></div>
+        </div>
+        <div class="ag-note">Cumple los ocho elementos, lo que habilita su <strong>certificación como HIX complementaria</strong> — 24 horas por participante, en la misma familia que los grupos representativos.</div>
+      </div>
+
+      <!-- Desarrollo Cultural -->
+      <div class="tabpane" data-p="2">
+        <div class="align-grid ag4">
+          <div class="ag-cell"><div class="agt">Encuentro entre grupos</div><div class="agd">Primer punto de encuentro real entre los once grupos musicales, que hoy ensayan y se presentan por separado.</div></div>
+          <div class="ag-cell"><div class="agt">Puerta de entrada</div><div class="agd">Atrae talento musical no vinculado a ningún grupo y abre la vía para su vinculación posterior.</div></div>
+          <div class="ag-cell"><div class="agt">Repertorio propio</div><div class="agd">Produce obras originales de la Universidad, con licencia de uso institucional y vida más allá del evento.</div></div>
+          <div class="ag-cell"><div class="agt">Posicionamiento</div><div class="agd">Sitúa a la cultura en la conversación institucional sobre innovación, creatividad y aprendizaje experiencial.</div></div>
+        </div>
+        <div class="ag-note">La cultura deja de acompañar la formación para <strong>producirla</strong>: una experiencia de alto impacto diseñada y ejecutada desde Desarrollo Cultural.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · QUIÉNES Y SOBRE QUÉ -->
+  <section class="slide" data-t="day" id="s5">
+    <div class="eyebrow r">04 — Quiénes participan y sobre qué componen</div>
+    <h2 class="r" style="max-width:20ch">Equipos mezclados, a propósito.</h2>
+    <p class="r" style="margin-bottom:34px;max-width:60ch">Convocatoria abierta a toda la comunidad estudiantil, con énfasis en los grupos representativos. Se puede entrar en equipo ya conformado o de forma individual — en ese caso la organización asigna, garantizando que todo equipo quede integral en instrumentos y voces. <strong style="color:var(--fg);font-weight:500">Máximo tres integrantes del mismo grupo por equipo.</strong></p>
+    <div class="lines r">
+      <div class="line-card">
+        <span class="tag">Línea A</span>
+        <h3>Vida universitaria</h3>
+        <p style="font-size:14px">La experiencia de ser estudiante de La Sabana: el campus, los amigos, la distancia de casa, la vida en Chía.</p>
+      </div>
+      <div class="line-card">
+        <span class="tag">Línea B</span>
+        <h3>UniSabana Xperience</h3>
+        <p style="font-size:14px">Una canción inspirada en un rasgo formativo: actitud humanizadora, conexión con el entorno, conexión global o CoInteligencia.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · SIGNATURE: LAS 24 HORAS -->
+  <section class="slide" data-t="night" id="s6">
+    <div class="eyebrow r">05 — La jornada <b>· de la tarde a la tarde</b></div>
+    <h2 class="r" style="margin-bottom:18px">Las 24 horas.</h2>
+    <p class="r" style="margin-bottom:34px;max-width:64ch">Tres bloques creativos, dos revisiones con mentores, dos talleres principales de formación y dos complementarios. La jornada arranca en la Estudioteca y termina en el Auditorio del K: el showcase, la deliberación y la premiación caben antes de las 2:00 p.m.</p>
+    <div class="tl-wrap r">
+      <div class="tl-bar">
+        <div class="tl-sky"></div>
+        <div class="tl-track" id="tlTrack"></div>
+        <div class="fill"></div>
+      </div>
+      <div class="tl-marks" id="tlMarks"></div>
+      <div class="tl-legend">
+        <div><b style="background:#DDE4F0"></b> Estudioteca · creación y montaje</div>
+        <div><b style="background:#F5C518"></b> Talleres de formación · 1 h c/u</div>
+        <div><b style="background:#16295C;box-shadow:0 0 0 1px rgba(255,255,255,.4)"></b> Ventana de descanso · 5 h</div>
+        <div><b style="background:#6E86B5"></b> Auditorio del K · showcase</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · MENTORES -->
+  <section class="slide" data-t="night" id="s7">
+    <div class="eyebrow r">06 — Acompañamiento</div>
+    <h2 class="r" style="max-width:24ch">Un mentor presente por turno.</h2>
+    <p class="r" style="margin-bottom:30px;max-width:62ch">Julián Crosby, Jordy Sánchez, Gustavo Rincón y Carolina Forero. Solo el mentor de turno está presente físicamente y es el único que factura esas horas; los demás pueden acompañar de forma virtual sin costo. No hace falta que confluyan varios a la vez, ni siquiera en la apertura o el cierre.</p>
+    <div class="shifts r">
+      <div class="shift"><div class="hr">14:00 – 19:00</div><div class="dur dia">5 h · diurno</div><div class="who">Julián Crosby<br><span style="opacity:.7">Resto del equipo, virtual sin costo</span></div></div>
+      <div class="shift"><div class="hr">19:00 – 23:00</div><div class="dur noche">4 h · nocturno</div><div class="who">Gustavo Rincón</div></div>
+      <div class="shift"><div class="hr">23:00 – 02:00</div><div class="dur noche">3 h · nocturno</div><div class="who">Jordy Sánchez</div></div>
+      <div class="shift"><div class="hr">02:00 – 07:00</div><div class="dur dia">5 h</div><div class="who">Sin mentoría programada</div></div>
+      <div class="shift"><div class="hr">07:00 – 14:00</div><div class="dur dia">7 h · diurno</div><div class="who">Carolina Forero</div></div>
+    </div>
+    <p class="r" style="margin-top:26px;font-size:13px">Entre las <strong style="color:var(--fg);font-weight:500">2:00 y las 7:00 a.m.</strong> no se programa mentoría: es la ventana de descanso, y su custodia queda a cargo del personal de la DBEE y de Seguridad. Total: <strong style="color:var(--fg);font-weight:500">12 horas-mentor diurnas</strong> y <strong style="color:var(--gold);font-weight:500">7 nocturnas</strong>.</p>
+  </section>
+
+  <!-- 6 · EVALUACIÓN Y PREMIOS -->
+  <section class="slide" data-t="night" id="s8">
+    <div class="eyebrow r">07 — Cómo se evalúa y qué se gana</div>
+    <div class="grid g2 r" style="background:transparent;border:none;gap:56px">
+      <div style="padding:0;background:transparent">
+        <h2 style="font-size:clamp(24px,2.6vw,34px);margin-bottom:22px">Evaluación</h2>
+        <p style="font-size:13.5px;margin-bottom:20px">Jurado externo de tres personas: dos invitados con honorario y el productor de la grabación como tercer jurado. Califican en vivo, presentación por presentación.</p>
+        <div class="crit">
+          <div class="crit-row"><div class="cname">Composición y originalidad</div><div class="cpct">30%</div><div class="cbar" style="--w:100%"><i></i></div></div>
+          <div class="crit-row"><div class="cname">Interpretación musical</div><div class="cpct">25%</div><div class="cbar" style="--w:83%"><i></i></div></div>
+          <div class="crit-row"><div class="cname">Coherencia con la línea temática</div><div class="cpct">20%</div><div class="cbar" style="--w:67%"><i></i></div></div>
+          <div class="crit-row"><div class="cname">Trabajo colaborativo</div><div class="cpct">15%</div><div class="cbar" style="--w:50%"><i></i></div></div>
+          <div class="crit-row" style="border-bottom:none"><div class="cname">Puesta en escena</div><div class="cpct">10%</div><div class="cbar" style="--w:33%"><i></i></div></div>
+        </div>
+      </div>
+      <div style="padding:0;background:transparent">
+        <h2 style="font-size:clamp(24px,2.6vw,34px);margin-bottom:22px">Premios</h2>
+        <div class="prize gold" style="margin-bottom:16px">
+          <span class="p-tag">Gran premio · 1.er puesto</span>
+          <h3 style="font-family:var(--display);font-size:21px;font-weight:700">Grabación profesional de la canción</h3>
+          <ul>
+            <li>Sencillo grabado, mezclado y masterizado — $2.500.000</li>
+            <li>Bono individual de $120.000 por integrante</li>
+            <li>Boletas Teatro UniSabana — $90.000 por integrante *</li>
+            <li>Cupo para un solista del equipo: presentar la obra como canción inédita en ASCUN 2027</li>
+          </ul>
+        </div>
+        <div class="prize">
+          <span class="p-tag" style="color:var(--muted)">Menciones especiales</span>
+          <h3 style="font-family:var(--display);font-size:19px;font-weight:700">Cuatro categorías · $100.000 por equipo</h3>
+          <ul>
+            <li>Mejor letra · Mejor interpretación</li>
+            <li>Mejor arreglo · Mejor equipo colaborativo</li>
+          </ul>
+        </div>
+        <p style="font-size:11.5px;margin-top:14px;color:var(--muted)">* Se busca conseguir las boletas mediante alianza con Teatro UniSabana.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · PRESUPUESTO -->
+  <section class="slide" data-t="day" id="s9">
+    <div class="eyebrow r">08 — Inversión <b>· haz clic en cada rubro</b></div>
+    <div class="budget-total r">
+      <div class="amt">$<span data-count="10928400" data-format="money">0</span></div>
+      <div class="cur">COP · escenario máximo</div>
+    </div>
+    <div class="budget-note r">Rango entre <strong style="color:var(--fg);font-weight:500">$9.628.400</strong> (50 participantes) y <strong style="color:var(--fg);font-weight:500">$10.928.400</strong> (70) — por debajo del Sabana Music Fest 2024 y por encima del Festival de Talentos 2025.</div>
+    <div class="bstack r" id="bstack">
+      <div data-k="0" style="--w:20.3%;background:var(--navy)"></div>
+      <div data-k="1" style="--w:34.2%;background:var(--blue)"></div>
+      <div data-k="2" style="--w:40.0%;background:var(--gold)"></div>
+      <div data-k="3" style="--w:5.5%;background:#8FA2C6"></div>
+    </div>
+    <div class="blegend r" id="blegend">
+      <button data-k="0"><div class="sw" style="background:var(--navy)"></div><div class="bn">$2.220.400</div><div class="bl">Talento — mentor de turno, talleristas y jurado. <strong style="color:var(--fg);font-weight:500">20.3%</strong></div></button>
+      <button data-k="1"><div class="sw" style="background:var(--blue)"></div><div class="bn">$3.738.000</div><div class="bl">Alimentación — comidas y estación de café. <strong style="color:var(--fg);font-weight:500">34.2%</strong></div></button>
+      <button data-k="2"><div class="sw" style="background:var(--gold)"></div><div class="bn">$4.370.000</div><div class="bl">Premios — grabación, bonos, menciones y boletas. <strong style="color:var(--fg);font-weight:500">40.0%</strong></div></button>
+      <button data-k="3"><div class="sw" style="background:#8FA2C6"></div><div class="bn">$600.000</div><div class="bl">Producción del evento — ingeniero de sonido. <strong style="color:var(--fg);font-weight:500">5.5%</strong></div></button>
+    </div>
+    <div class="bdetail r" id="bdetail">
+      <div class="empty">Selecciona un rubro para ver el desglose línea por línea.</div>
+    </div>
+  </section>
+
+  <!-- 8 · QUÉ NECESITAMOS DEL COMITÉ -->
+  <section class="slide" data-t="day" id="s10">
+    <div class="eyebrow r">09 — Para avanzar</div>
+    <h2 class="r" style="max-width:18ch">Qué necesitamos del comité.</h2>
+    <div class="asks r">
+      <div class="ask">
+        <div class="num">1</div>
+        <h3>Aval del presupuesto</h3>
+        <p>Aprobación del rango de $9.6 a $10.9 millones, según el número final de participantes.</p>
+      </div>
+      <div class="ask">
+        <div class="num">2</div>
+        <h3>Aval de la permanencia nocturna</h3>
+        <p>Visto bueno para coordinar con Seguridad y Salud el protocolo de permanencia en campus entre las 7:00 p.m. y las 7:00 a.m.</p>
+      </div>
+      <div class="ask">
+        <div class="num">3</div>
+        <h3>Retroalimentación de la propuesta</h3>
+        <p>Comentarios sobre el formato, el alcance y la mecánica antes de cerrar las bases y abrir la convocatoria.</p>
+      </div>
+    </div>
+    <p class="r" style="margin-bottom:26px;font-size:13.5px">Con esas tres definiciones, la convocatoria abre en septiembre y el cronograma de gestión llega con tiempo suficiente al 6 de noviembre.</p>
+    <div class="contact r">
+      <div><div class="k">Presenta</div><div class="v">Santiago Bedoya Barahona<br>Coordinador de Desarrollo Cultural</div></div>
+      <div><div class="k">Contacto</div><div class="v">santiago.bedoya@unisabana.edu.co<br>Edificio A5</div></div>
+      <div><div class="k">Área</div><div class="v">Dirección de Bienestar y<br>Experiencia del Estudiante</div></div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  var deck=document.getElementById('deck');
+  var slides=Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var dots=document.getElementById('dots');
+  var wave=document.getElementById('wave');
+  var hint=document.getElementById('hint');
+  var current=0;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* logo fallback */
+  var logo=document.getElementById('logo');
+  logo.addEventListener('error',function(){
+    logo.style.display='none';
+    document.getElementById('logoFallback').style.display='block';
+  });
+  var coverLogo=document.getElementById('coverLogo');
+  coverLogo.addEventListener('error',function(){
+    coverLogo.style.display='none';
+    document.getElementById('coverLogoFallback').style.display='block';
+  });
+
+  /* onda de portada */
+  var hw=document.getElementById('heroWave');
+  var heights=[26,44,18,56,34,50,22,40,56,30,46,20,52,36,24,48,32,54,26,42,18,50,38,28];
+  heights.forEach(function(h,i){
+    var b=document.createElement('i');
+    b.style.height=h+'px';
+    b.style.animationDelay=(i*0.075)+'s';
+    if(reduce)b.style.animation='none';
+    hw.appendChild(b);
+  });
+
+  /* segmentos de fase del timeline — % reales sobre 1440 min */
+  var segs=[
+    {l:0,     w:6.25,  c:'#DDE4F0', st:'#00205B', n:''},
+    {l:6.25,  w:8.33,  c:'#F5C518', st:'#00205B', n:'Talleres · composición y arreglo'},
+    {l:14.58, w:8.33,  c:'#DDE4F0', st:'#00205B', n:'Creación'},
+    {l:22.92, w:4.17,  c:'#F5C518', st:'#00205B', n:'Voz'},
+    {l:27.08, w:10.42, c:'#DDE4F0', st:'#00205B', n:'Creación · Estudioteca'},
+    {l:37.5,  w:4.17,  c:'#F5C518', st:'#00205B', n:'Mind.'},
+    {l:41.67, w:8.33,  c:'#DDE4F0', st:'#00205B', n:'Arreglos'},
+    {l:50,    w:20.83, c:'#16295C', st:'#FFFFFF', n:'Ventana de descanso'},
+    {l:70.83, w:13.54, c:'#DDE4F0', st:'#00205B', n:'Montaje'},
+    {l:84.37, w:15.63, c:'#6E86B5', st:'#FFFFFF', n:'Auditorio del K'}
+  ];
+  var track=document.getElementById('tlTrack');
+  segs.forEach(function(s){
+    var d=document.createElement('div');
+    d.className='tl-seg';
+    d.style.setProperty('--l',s.l+'%');
+    d.style.setProperty('--w',s.w+'%');
+    d.style.setProperty('--c',s.c);
+    d.style.setProperty('--st',s.st);
+    if(s.n)d.innerHTML='<span>'+s.n+'</span>';
+    track.appendChild(d);
+  });
+
+  /* marcas horarias */
+  var marks=[
+    {p:0,     h:'14:00',t:'Apertura'},
+    {p:6.25,  h:'15:30',t:'Formación'},
+    {p:20.83, h:'19:00',t:'Cena'},
+    {p:37.5,  h:'23:00',t:'Mindfulness'},
+    {p:50,    h:'02:00',t:'Descanso'},
+    {p:73.96, h:'07:45',t:'Montaje'},
+    {p:84.37, h:'10:15',t:'Auditorio'},
+    {p:91.67, h:'12:00',t:'Showcase'},
+    {p:100,   h:'14:00',t:'Premiación'}
+  ];
+  var tl=document.getElementById('tlMarks');
+  marks.forEach(function(m,i){
+    var d=document.createElement('div');
+    d.className='tl-mark'+(i===0?' first':'')+(i===marks.length-1?' last':'');
+    d.style.left=m.p+'%';
+    d.innerHTML='<i></i><div class="h">'+m.h+'</div><div class="t">'+m.t+'</div>';
+    tl.appendChild(d);
+  });
+
+  /* antecedentes: revelado por pasos + portada "todos listos" */
+  var steps=Array.prototype.slice.call(document.querySelectorAll('.step'));
+  Array.prototype.forEach.call(document.querySelectorAll('.nextbtn'),function(btn){
+    btn.addEventListener('click',function(){
+      var g=btn.dataset.go;
+      if(g==='next'){
+        var idx=slides.indexOf(btn.closest('.slide'));
+        go(idx+1);
+        return;
+      }
+      steps.forEach(function(st){st.classList.toggle('on',st.dataset.s===g)});
+    });
+  });
+
+  /* pestañas de alineación institucional */
+  var alignTabs=document.getElementById('alignTabs');
+  if(alignTabs){
+    var panes=Array.prototype.slice.call(document.querySelectorAll('.tabpane'));
+    Array.prototype.forEach.call(alignTabs.children,function(btn){
+      btn.addEventListener('click',function(){
+        var k=btn.dataset.p;
+        Array.prototype.forEach.call(alignTabs.children,function(b){b.classList.toggle('on',b===btn)});
+        panes.forEach(function(pn){pn.classList.toggle('on',pn.dataset.p===k)});
+      });
+    });
+  }
+
+  /* desglose interactivo del presupuesto */
+  var BUD=[
+    {t:'Talento',rows:[
+      ['Mentor de turno — 12 h diurnas × $81.000','$972.000'],
+      ['Mentor de turno — 7 h nocturnas × $109.600','$767.200'],
+      ['Talleristas formación — 2 h diurnas (composición y arreglo)','$162.000'],
+      ['Talleristas complementarios — 2 h nocturnas (voz y mindfulness)','$219.200'],
+      ['Jurado externo — 2 invitados','$100.000'],
+      ['Subtotal','$2.220.400']
+    ]},
+    {t:'Alimentación',rows:[
+      ['Cena Día 1 — $20.000 × 77 personas','$1.540.000'],
+      ['Refrigerio nocturno — $9.000 × 77 personas','$693.000'],
+      ['Desayuno Día 2 — $15.000 × 77 personas','$1.155.000'],
+      ['Estación de café permanente','$350.000'],
+      ['Refrigerio apertura de puertas — público externo','Por cotizar'],
+      ['Subtotal','$3.738.000']
+    ]},
+    {t:'Premios',rows:[
+      ['Grabación profesional del sencillo ganador','$2.500.000'],
+      ['Bonos 1.er puesto — $120.000 × 7 integrantes','$840.000'],
+      ['Boletas Teatro UniSabana — $90.000 × 7 integrantes *','$630.000'],
+      ['Menciones especiales — $100.000 × 4 categorías','$400.000'],
+      ['Cupo solista en ASCUN 2027 — gestión institucional',''],
+      ['Subtotal','$4.370.000']
+    ]},
+    {t:'Producción',rows:[
+      ['Ingeniero de sonido — Auditorio del K','$600.000'],
+      ['Estudioteca — espacio institucional','Sin costo'],
+      ['Subtotal','$600.000']
+    ]}
+  ];
+  var bdetail=document.getElementById('bdetail');
+  var blegend=document.getElementById('blegend');
+  var bstack=document.getElementById('bstack');
+  var selected=null;
+
+  function showBud(k){
+    if(selected===k){ /* segundo clic cierra */
+      selected=null;
+      bdetail.innerHTML='<div class="empty">Selecciona un rubro para ver el desglose línea por línea.</div>';
+      bstack.classList.remove('sel');
+      Array.prototype.forEach.call(blegend.children,function(b){b.classList.remove('on')});
+      Array.prototype.forEach.call(bstack.children,function(s){s.classList.remove('on')});
+      return;
+    }
+    selected=k;
+    var d=BUD[k];
+    var html='<div class="dt">'+d.t+' · desglose</div><table>';
+    d.rows.forEach(function(r){html+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>'});
+    bdetail.innerHTML=html+'</table>';
+    bstack.classList.add('sel');
+    Array.prototype.forEach.call(blegend.children,function(b){b.classList.toggle('on',+b.dataset.k===k)});
+    Array.prototype.forEach.call(bstack.children,function(s){s.classList.toggle('on',+s.dataset.k===k)});
+  }
+  Array.prototype.forEach.call(blegend.children,function(b){
+    b.addEventListener('click',function(){showBud(+b.dataset.k)});
+  });
+  Array.prototype.forEach.call(bstack.children,function(s){
+    s.addEventListener('click',function(){showBud(+s.dataset.k)});
+  });
+
+  /* dots + barra de onda */
+  slides.forEach(function(s,i){
+    var b=document.createElement('button');
+    b.setAttribute('aria-label','Ir a la sección '+(i+1));
+    b.addEventListener('click',function(){go(i)});
+    dots.appendChild(b);
+  });
+  for(var i=0;i<48;i++){
+    var sp=document.createElement('span');
+    sp.style.height=(6+((i*7)%14))+'px';
+    wave.appendChild(sp);
+  }
+  var bars=Array.prototype.slice.call(wave.children);
+
+  function paint(){
+    Array.prototype.forEach.call(dots.children,function(d,i){
+      d.classList.toggle('on',i===current);
+    });
+    var upto=Math.round(((current+1)/slides.length)*bars.length);
+    bars.forEach(function(b,i){b.classList.toggle('on',i<upto)});
+    document.body.setAttribute('data-theme',slides[current].dataset.t);
+    var cover=current===0;
+    document.getElementById('logo').style.opacity=cover?0:.9;
+    document.getElementById('logoFallback').style.opacity=cover?0:1;
+    document.querySelector('.meta-fixed').style.opacity=cover?0:1;
+    dots.style.opacity=cover?0:1;
+    wave.style.opacity=cover?0:1;
+  }
+
+  function go(i){
+    if(i<0||i>=slides.length)return;
+    slides[i].scrollIntoView({behavior:reduce?'auto':'smooth'});
+  }
+
+  /* contadores */
+  function countUp(el){
+    if(el.dataset.done)return;
+    el.dataset.done='1';
+    var target=parseInt(el.dataset.count,10);
+    var money=el.dataset.format==='money';
+    if(reduce){el.textContent=money?target.toLocaleString('es-CO'):target;return}
+    var dur=money?1500:900, t0=null;
+    function step(ts){
+      if(!t0)t0=ts;
+      var p=Math.min((ts-t0)/dur,1);
+      var e=1-Math.pow(1-p,3);
+      var v=Math.round(target*e);
+      el.textContent=money?v.toLocaleString('es-CO'):v;
+      if(p<1)requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* observer de sección activa */
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting&&e.intersectionRatio>0.55){
+        var idx=slides.indexOf(e.target);
+        if(idx!==current){current=idx;paint()}
+        e.target.classList.add('active');
+        Array.prototype.forEach.call(e.target.querySelectorAll('[data-count]'),countUp);
+      }
+    });
+  },{threshold:[0.55]});
+  slides.forEach(function(s){io.observe(s)});
+
+  /* teclado */
+  document.addEventListener('keydown',function(e){
+    var onBtn=e.target&&e.target.tagName==='BUTTON';
+    if(e.key==='ArrowDown'||e.key==='ArrowRight'||e.key==='PageDown'||(e.key===' '&&!onBtn)){
+      e.preventDefault();go(current+1);
+    }else if(e.key==='ArrowUp'||e.key==='ArrowLeft'||e.key==='PageUp'){
+      e.preventDefault();go(current-1);
+    }else if(e.key==='Home'){e.preventDefault();go(0)}
+    else if(e.key==='End'){e.preventDefault();go(slides.length-1)}
+    hint.classList.add('hide');
+  });
+  deck.addEventListener('scroll',function(){hint.classList.add('hide')},{passive:true});
+
+  slides[0].classList.add('active');
+  paint();
+})();
+</script>
+</body>
+</html>
